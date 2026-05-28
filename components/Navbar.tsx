@@ -2,12 +2,18 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 
 export default function Navbar() {
     const [menuOpen, setMenuOpen] = useState(false);
+    const [navHeight, setNavHeight] = useState(0);
+    const navRef = useRef<HTMLElement>(null);
     const pathname = usePathname();
+
+    useEffect(() => {
+        if (navRef.current) setNavHeight(navRef.current.offsetHeight);
+    }, []);
 
     useEffect(() => {
         document.body.style.overflow = menuOpen ? "hidden" : "";
@@ -23,7 +29,7 @@ export default function Navbar() {
 
     return (
         <>
-            <nav className="sticky top-0 z-50 bg-white border-b border-black font-satoshi">
+            <nav ref={navRef} className="sticky top-0 z-50 bg-white border-b border-black font-satoshi">
                 <div className="grid grid-cols-3 max-w-6xl mx-auto items-center p-4 w-full">
                     {/* LEFT: Logo */}
                     <div className="relative h-15 w-fit">
@@ -75,8 +81,8 @@ export default function Navbar() {
 
                 {/* Panel */}
                 <div className={`absolute top-0 right-0 w-[78%] h-full bg-white flex flex-col transition-transform duration-300 ease-in-out ${menuOpen ? "translate-x-0" : "translate-x-full"}`}>
-                    {/* Close button — height matches navbar so divider aligns with navbar bottom */}
-                    <div className="flex items-center justify-end px-6 h-23">
+                    {/* Close button — height derived from measured navbar height */}
+                    <div style={{ height: navHeight || undefined }} className="flex items-center justify-end px-6">
                         <button
                             onClick={() => setMenuOpen(false)}
                             className="text-black text-2xl leading-none p-4 -m-4"
