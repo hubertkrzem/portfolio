@@ -5,20 +5,48 @@ import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 
+const LOGO_H     = 60;  // base logo height in px (h-15)
+const PAD_Y      = 16;  // base vertical padding in px (py-4)
+const SHRINK     = 0.5; // fraction to apply when scrolled — edit here to change the reduction
+const SCROLL_IN  = 10;  // px scrolled down before navbar shrinks
+const SCROLL_OUT = 0;   // px — restore only when fully back at top
+
 export default function Navbar() {
     const [menuOpen, setMenuOpen] = useState(false);
     const [navHeight, setNavHeight] = useState(0);
+    const [scrolled, setScrolled] = useState(false);
     const navRef = useRef<HTMLElement>(null);
     const pathname = usePathname();
 
     useEffect(() => {
-        if (navRef.current) setNavHeight(navRef.current.offsetHeight);
+        if (!navRef.current) return;
+        const ro = new ResizeObserver(() => {
+            if (navRef.current) setNavHeight(navRef.current.offsetHeight);
+        });
+        ro.observe(navRef.current);
+        return () => ro.disconnect();
+    }, []);
+
+    useEffect(() => {
+        const onScroll = () => {
+            const y = window.scrollY;
+            setScrolled(prev => {
+                if (!prev && y > SCROLL_IN)  return true;
+                if (prev  && y <= SCROLL_OUT) return false;
+                return prev;
+            });
+        };
+        window.addEventListener("scroll", onScroll, { passive: true });
+        return () => window.removeEventListener("scroll", onScroll);
     }, []);
 
     useEffect(() => {
         document.body.style.overflow = menuOpen ? "hidden" : "";
         return () => { document.body.style.overflow = ""; };
     }, [menuOpen]);
+
+    const logoH = scrolled ? LOGO_H * SHRINK : LOGO_H;
+    const padY  = scrolled ? PAD_Y  * SHRINK : PAD_Y;
 
     const navLinks = [
         { label: "Home", href: "/", external: false },
@@ -30,16 +58,16 @@ export default function Navbar() {
     return (
         <>
             <nav ref={navRef} className="sticky top-0 z-50 bg-white border-b border-black font-satoshi">
-                <div className="grid grid-cols-3 max-w-6xl mx-auto items-center p-4 w-full">
+                <div style={{ paddingTop: padY, paddingBottom: padY }} className="grid grid-cols-3 max-w-6xl mx-auto items-center w-full px-4 transition-[padding] duration-300 ease-in-out">
                     {/* LEFT: Logo */}
-                    <div className="relative h-15 w-fit">
+                    <div style={{ height: logoH }} className="relative w-fit transition-[height] duration-300 ease-in-out">
                         <Link href="/">
                             <Image
                                 src="/logo-hk.svg"
                                 alt="Site logo, black lowercase letters, h and k"
                                 width={82}
                                 height={63}
-                                className="w-auto object-contain cursor-pointer"
+                                className="h-full w-auto object-contain cursor-pointer"
                                 priority
                             />
                         </Link>
