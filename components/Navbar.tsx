@@ -57,7 +57,7 @@ export default function Navbar() {
 
     return (
         <>
-            <nav ref={navRef} className="sticky top-0 z-50 bg-white border-b border-black font-satoshi">
+            <nav ref={navRef} className="sticky top-0 z-50 bg-white/75 backdrop-blur-sm border-b border-black font-satoshi">
                 <div style={{ paddingTop: padY, paddingBottom: padY }} className="grid grid-cols-3 max-w-6xl mx-auto items-center w-full px-4 transition-[padding] duration-300 ease-in-out">
                     {/* LEFT: Logo */}
                     <div style={{ height: logoH }} className="relative w-fit transition-[height] duration-300 ease-in-out">
