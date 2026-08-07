@@ -1,3 +1,12 @@
+export type EmploymentType =
+  | "Full-time"
+  | "Part-time"
+  | "Internship"
+  | "Seasonal"
+  | "Contract"
+  | "Freelance"
+  | "Volunteer";
+
 export interface ExperienceEntry {
   /** Job title / role, e.g. "Software Engineer Intern" */
   title: string;
@@ -11,6 +20,8 @@ export interface ExperienceEntry {
   image: string;
   /** Alt text for the image — defaults to "{company} logo" if omitted */
   imageAlt?: string;
+  /** How the role was engaged — shown as a small label next to the dates */
+  employmentType?: EmploymentType;
 }
 
 /**
@@ -20,20 +31,22 @@ export interface ExperienceEntry {
  */
 export const experience: ExperienceEntry[] = [
   {
-    title: "Role Title",
-    company: "Company Name",
-    period: "Mon YYYY – Mon YYYY",
+    title: "Founder and Developer",
+    company: "hk",
+    period: "June 2025 – Present",
     description:
       "Placeholder description — replace with 2–3 sentences covering scope, the stack you used, and a measurable outcome (e.g. \"Built a data pipeline with Python and PostgreSQL that cut report generation time by 40%.\").",
-    image: "/experience/placeholder-1.svg",
+    image: "/logo-hk.svg",
+    employmentType: "Freelance",
   },
   {
     title: "Role Title",
-    company: "Company Name",
-    period: "Mon YYYY – Mon YYYY",
+    company: "IBM",
+    period: "March 2026 - September 2026",
     description:
-      "Placeholder description — replace with 2–3 sentences covering scope, the stack you used, and a measurable outcome.",
+      "- Owned end-to-end delivery of a product feature for the customer-facing portal, coordinating design handoff, writing tickets, running sync calls, and tracking progress to release. \n - Built product dashboards surfacing sales and pipeline metrics, using static (HTML/JavaScript) and React frontends backed by PostgreSQL and containerised with Docker.",
     image: "/experience/placeholder-2.svg",
+    employmentType: "Internship",
   },
   {
     title: "Role Title",
@@ -42,5 +55,6 @@ export const experience: ExperienceEntry[] = [
     description:
       "Placeholder description — replace with 2–3 sentences covering scope, the stack you used, and a measurable outcome.",
     image: "/experience/placeholder-3.svg",
+    employmentType: "Seasonal",
   },
 ];
