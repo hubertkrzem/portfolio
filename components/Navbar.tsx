@@ -51,7 +51,7 @@ export default function Navbar() {
     const navLinks = [
         { label: "Home", href: "/", external: false },
         { label: "Portfolio", href: "/portfolio", external: false },
-        { label: "Experience", href: "/about", external: false },
+        { label: "Experience", href: "/experience", external: false },
         { label: "Resume", href: "/redacted_Hubert_Krzemieniewski_CV.pdf", external: true },
     ];
 
@@ -77,7 +77,7 @@ export default function Navbar() {
                     <div className="hidden md:block">
                         <ul className="flex justify-center space-x-10 text-black text-xs font-bold">
                             <li><Link href="/portfolio">Portfolio</Link></li>
-                            <li><Link href="/about">Experience</Link></li>
+                            <li><Link href="/experience">Experience</Link></li>
                             <li><a href="/redacted_Hubert_Krzemieniewski_CV.pdf">Resume</a></li>
                         </ul>
                     </div>

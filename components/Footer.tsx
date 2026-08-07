@@ -12,7 +12,7 @@ export default function Footer() {
                 <div className="grid grid-cols-2">
                     <div className="flex flex-col font-bold underline">
                         <Link href="/portfolio" className="text-lg py-2">Portfolio</Link>
-                        <a href="/about" className="text-lg py-2">Experience</a>
+                        <a href="/experience" className="text-lg py-2">Experience</a>
                         <Link href="/redacted_Hubert_Krzemieniewski_CV.pdf" className="text-lg py-2">Resume</Link>
                     </div>
                     <div className="flex flex-col items-left font-bold underline">
@@ -70,7 +70,7 @@ export default function Footer() {
                         </ul>
                         <ul>
                             <li><Link href="/portfolio">Portfolio</Link></li>
-                            <li><a href="/about">Experience</a></li>
+                            <li><a href="/experience">Experience</a></li>
                             <li><Link href="/redacted_Hubert_Krzemieniewski_CV.pdf">Resume</Link></li>
                         </ul>
                         <ul>
