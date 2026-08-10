@@ -57,6 +57,17 @@ export default function Timeline({ entries }: { entries: ExperienceEntry[] }) {
             </div>
 
             <p className="text-base leading-relaxed text-black/80">{entry.description}</p>
+
+            {entry.bullets && entry.bullets.length > 0 && (
+              <ul className="flex flex-col gap-2 mt-3">
+                {entry.bullets.map((point, j) => (
+                  <li key={j} className="flex gap-2 text-base leading-relaxed text-black/80">
+                    <span className="shrink-0 text-black/40">›</span>
+                    <span>{point}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </article>
         </li>
       ))}

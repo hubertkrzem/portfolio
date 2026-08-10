@@ -14,8 +14,10 @@ export interface ExperienceEntry {
   company: string;
   /** Human-readable time period, e.g. "Jun 2025 – Aug 2025" */
   period: string;
-  /** A few sentences on scope, stack, and impact */
+  /** One-sentence summary of the role — shown above the bullet list */
   description: string;
+  /** Optional bullet points for scope, stack, and specific achievements */
+  bullets?: string[];
   /** Path to a logo/photo for this entry, e.g. "/experience/company.png" */
   image: string;
   /** Alt text for the image — defaults to "{company} logo" if omitted */
@@ -34,21 +36,29 @@ export const experience: ExperienceEntry[] = [
     title: "Founder and Developer",
     company: "hk",
     period: "June 2025 – Present",
-    description:
-      "Placeholder description — replace with 2–3 sentences covering scope, the stack you used, and a measurable outcome (e.g. \"Built a data pipeline with Python and PostgreSQL that cut report generation time by 40%.\").",
-    image: "/logo-hk.svg",
+    description: "Started a digital services agency, delivering digital services for Irish SMEs.",
+    bullets: [
+      "Designed and delivered custom websites",
+      "Meta and Google ads services",
+      "Social media management",
+    ],
+    image: "/experience/hk_logo.svg",
     employmentType: "Freelance",
   },
   {
-    title: "Role Title",
+    title: "Product Manager",
     company: "IBM",
     period: "March 2026 - September 2026",
-    description:
-      "- Owned end-to-end delivery of a product feature for the customer-facing portal, coordinating design handoff, writing tickets, running sync calls, and tracking progress to release. \n - Built product dashboards surfacing sales and pipeline metrics, using static (HTML/JavaScript) and React frontends backed by PostgreSQL and containerised with Docker.",
-    image: "/experience/placeholder-2.svg",
+    description: "Contributed to IBM's customer-facing portal and internal reporting tools.",
+    bullets: [
+      "Owned end-to-end delivery of a product feature for the customer-facing portal, coordinating design handoff, writing tickets, running sync calls, and tracking progress to release.",
+      "Built product dashboards surfacing sales and pipeline metrics, using static (HTML/JavaScript) and React frontends backed by PostgreSQL and containerised with Docker.",
+      "Worked on a new feature for IBM's Bob LLM, allowing developers to work with multiple agents in parallel."
+    ],
+    image: "/experience/IBM_logo.svg",
     employmentType: "Internship",
   },
-  {
+  /* {
     title: "Role Title",
     company: "Company Name",
     period: "Mon YYYY – Mon YYYY",
@@ -56,5 +66,5 @@ export const experience: ExperienceEntry[] = [
       "Placeholder description — replace with 2–3 sentences covering scope, the stack you used, and a measurable outcome.",
     image: "/experience/placeholder-3.svg",
     employmentType: "Seasonal",
-  },
+  }, */
 ];
