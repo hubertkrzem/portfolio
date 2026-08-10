@@ -38,9 +38,7 @@ export const experience: ExperienceEntry[] = [
     period: "June 2025 – Present",
     description: "Started a digital services agency, delivering digital services for Irish SMEs.",
     bullets: [
-      "Designed and delivered custom websites",
-      "Meta and Google ads services",
-      "Social media management",
+      "Designing and building custom websites",
     ],
     image: "/experience/hk_logo.svg",
     employmentType: "Freelance",
