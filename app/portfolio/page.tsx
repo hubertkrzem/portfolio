@@ -1,7 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
-import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -11,23 +10,12 @@ interface Project {
   description: string;
   technologies?: string[];
   link?: string;
-}
-
-interface PanelConfig {
-  image?: string;
-}
-
-// To display a single image spanning all three panels, set sharedImage.
-// To use a different image per panel, set panels[n].image.
-// Leave both unset to use the default peach/sunset gradient.
-interface HeroConfig {
-  sharedImage?: string;
-  panels?: [PanelConfig, PanelConfig, PanelConfig];
+  // Optional so future projects can land without matching icon art ready —
+  // a card just falls back to a plain gradient fill when it's missing.
+  icon?: string;
 }
 
 // ─── Content ─────────────────────────────────────────────────────────────────
-
-const heroConfig: HeroConfig = {};
 
 const projects: Project[] = [
   {
@@ -37,6 +25,7 @@ const projects: Project[] = [
       "Personal portfolio built with Next.js 16 and Tailwind CSS v4. Features a custom animated SVG blob component, a sticky navbar with scroll-driven shrinking, and a smooth responsive layout.",
     technologies: ["Next.js", "TypeScript", "Tailwind CSS"],
     link: "https://github.com/hubertkrzem",
+    icon: "/icons/fpl-notifications.png", // placeholder — no dedicated icon yet
   },
   {
     title: "Snakes and Ladders CLI",
@@ -44,6 +33,7 @@ const projects: Project[] = [
     description:
       "A second project — replace this with the real name and description. Describe the problem it solves, the stack you used, and anything interesting you learned or built.",
     technologies: ["Python"],
+    icon: "/icons/snakes-and-ladders.png",
   },
   {
     title: "Project Three",
@@ -51,206 +41,215 @@ const projects: Project[] = [
     description:
       "A third project — replace this with the real name and description. Include scope, technical decisions, and measurable outcomes where possible.",
     technologies: ["Python", "FastAPI", "Docker"],
+    icon: "/icons/jiramon.png", // placeholder — no dedicated icon yet
+  },
+  {
+    title: "Project Four",
+    date: "08.24",
+    description:
+      "A fourth project — replace this with the real name and description. Include scope, technical decisions, and measurable outcomes where possible.",
+    technologies: ["TypeScript"],
+    icon: "/icons/fpl-notifications.png", // placeholder — no dedicated icon yet
+  },
+  {
+    title: "Project Five",
+    date: "03.24",
+    description:
+      "A fifth project — replace this with the real name and description. Include scope, technical decisions, and measurable outcomes where possible.",
+    technologies: ["Python"],
+    icon: "/icons/snakes-and-ladders.png", // placeholder — no dedicated icon yet
+  },
+  {
+    title: "Project Six",
+    date: "01.24",
+    description:
+      "A sixth project — replace this with the real name and description. Include scope, technical decisions, and measurable outcomes where possible.",
+    technologies: ["TypeScript", "Next.js"],
+    icon: "/icons/jiramon.png", // placeholder — no dedicated icon yet
   },
 ];
 
-// ─── Continuous gradient shared across all default panels ────────────────────
-// One gradient spans the whole row; each bar is a window onto it, clipped to an
-// icon shape via mask-image so only the icon's opaque pixels reveal colour.
+// Card gradient fill — same brand pink→peach used for the title's underline.
+const CARD_GRADIENT = "linear-gradient(to top, rgb(239,98,159), rgb(238,205,163))";
 
-const HERO_GRADIENT =
-  "linear-gradient(to top, rgb(239,98,159), rgb(238,205,163))";
+// Fixed height "buckets" a card can land on. Column width in this layout tops
+// out around ~360–370px at every breakpoint (columns-2 on mobile, columns-3
+// once max-w-6xl is reached), so these are all comfortably taller than that —
+// width < height holds by construction, no runtime measuring needed.
+const HEIGHT_BUCKETS = ["h-[28rem]", "h-[34rem]", "h-[40rem]"];
 
-// Icon + caption per bar. Icons are transparent PNGs — the alpha channel is the
-// mask. Swap these paths for URLs returned by an image-upload API via setBarIcon().
-const HERO_PANELS: { icon: string; title: string }[] = [
-  { icon: "/icons/snakes-and-ladders.png", title: "snakes and ladders cli" },
-  { icon: "/icons/fpl-notifications.png", title: "fpl notifications" },
-  { icon: "/icons/jiramon.png", title: "jiramon" },
-];
-
-// ─── HeroPanel ───────────────────────────────────────────────────────────────
-
-function HeroPanel({
-  index,
-  config,
-  sharedImage,
-  rowWidth,
-  offset,
-  icon,
-  title,
-}: {
-  index: 0 | 1 | 2;
-  config?: PanelConfig;
-  sharedImage?: string;
-  rowWidth: number;
-  offset: number;
-  icon: string;
-  title: string;
-}) {
-  if (config?.image) {
-    return (
-      <div className="relative w-full h-full overflow-hidden">
-        <Image
-          src={config.image}
-          alt={`Portfolio hero panel ${index + 1}`}
-          fill
-          className="object-cover"
-        />
-      </div>
-    );
-  }
-
-  if (sharedImage) {
-    const positions = ["0%", "50%", "100%"] as const;
-    return (
-      <div
-        className="w-full h-full overflow-hidden"
-        style={{
-          backgroundImage: `url(${sharedImage})`,
-          backgroundSize: "300% 100%",
-          backgroundPosition: `${positions[index]} center`,
-        }}
-      />
-    );
-  }
-
-  return (
-    // font-size lives here so the icon layer and the label resolve the same
-    // "1em" for --label-lh below — that's what keeps the two-line reservation
-    // and the icon crop point in sync from a single value.
-    <div
-      className="relative w-full h-full overflow-hidden text-xl md:text-5xl font-bold"
-      style={{ "--label-lh": 1.15 } as React.CSSProperties}
-    >
-      {/* Gradient window: sized to the full row and shifted left by this bar's
-          offset within it, so all three windows read as one continuous gradient.
-          Height stops at the bottom edge of the label's first line: the space
-          above the label (iconZoneHeight = 100% - 2 * --label-lh) plus the one
-          line the icon still shows behind, i.e. 100% - 1 * --label-lh. */}
-      <div
-        className="absolute top-0 left-0 right-0"
-        style={
-          {
-            backgroundImage: HERO_GRADIENT,
-            backgroundSize: `${rowWidth}px 100%`,
-            "--bg-offset": `-${offset}px`,
-            backgroundPosition: "var(--bg-offset) center",
-            "--icon": `url("${icon}")`,
-            WebkitMaskImage: "var(--icon)",
-            maskImage: "var(--icon)",
-            // Sized past the bar's own width (aspect ratio preserved via
-            // "auto" height) and nudged right by a flat pixel offset so the
-            // icon overflows and gets cropped by the bar's overflow-hidden,
-            // matching the reference bleed-and-crop look.
-            WebkitMaskSize: "130% auto",
-            maskSize: "130% auto",
-            WebkitMaskRepeat: "no-repeat",
-            maskRepeat: "no-repeat",
-            WebkitMaskPosition: "calc(50% + 40px) center",
-            maskPosition: "calc(50% + 40px) center",
-            height: "calc(100% - var(--label-lh) * 1em)",
-          } as React.CSSProperties
-        }
-      />
-      {/* Label: pinned flush to the tile's bottom edge (no vertical padding)
-          so the 2-line reservation below lines up exactly with the icon-layer
-          crop above. min-height floors it at 2 lines even for short titles;
-          line-clamp caps it at 2 for long ones — always exactly 2, never 1 or 3. */}
-      <div
-        className="absolute bottom-0 left-4 right-4 md:left-6 md:right-6"
-        style={
-          {
-            lineHeight: "var(--label-lh)",
-            minHeight: "calc(var(--label-lh) * 2em)",
-            display: "-webkit-box",
-            WebkitBoxOrient: "vertical",
-            WebkitLineClamp: 2,
-            overflow: "hidden",
-          } as React.CSSProperties
-        }
-      >
-        {title}
-      </div>
-    </div>
+function randomHeights() {
+  return projects.map(
+    () => HEIGHT_BUCKETS[Math.floor(Math.random() * HEIGHT_BUCKETS.length)]
   );
 }
 
-// ─── HeroRow ─────────────────────────────────────────────────────────────────
-// Owns the row's measured width and each bar's offset within it so the shared
-// gradient background lines up continuously across all three bars, and re-measures
-// on resize so the illusion holds at any width.
+const GLOW = "border-[rgb(239,98,159)] shadow-[0_0_10px_-4px_rgba(239,98,159,0.35)]";
 
-function HeroRow({ extraOffset }: { extraOffset: number }) {
-  const rowRef = useRef<HTMLDivElement>(null);
-  const barRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [rowWidth, setRowWidth] = useState(0);
-  const [offsets, setOffsets] = useState<number[]>([0, 0, 0]);
-  const [iconUrls, setIconUrls] = useState<[string, string, string]>([
-    "",
-    "",
-    "",
-  ]);
+// Tailwind only detects classes that appear as complete, literal text in the
+// source — concatenating a "hover:" prefix onto the GLOW string above at
+// runtime (e.g. `hover:${GLOW}`) produces a class name Tailwind never sees
+// and therefore never generates CSS for. So each state variant needs its own
+// fully-spelled-out literal string instead of being built from GLOW.
+const CARD_GLOW =
+  "hover:border-[rgb(239,98,159)] hover:shadow-[0_0_10px_-4px_rgba(239,98,159,0.35)] " +
+  "focus-visible:border-[rgb(239,98,159)] focus-visible:shadow-[0_0_10px_-4px_rgba(239,98,159,0.35)] " +
+  "active:border-[rgb(239,98,159)] active:shadow-[0_0_10px_-4px_rgba(239,98,159,0.35)]";
 
-  // Single entry point for setting a bar's icon — local paths now and
-  // image-upload API results later both flow through this the same way.
-  function setBarIcon(barIndex: 0 | 1 | 2, url: string) {
-    setIconUrls((prev) => {
-      const next = [...prev] as [string, string, string];
-      next[barIndex] = url;
-      return next;
-    });
-  }
+// ─── ProjectCard ─────────────────────────────────────────────────────────────
 
-  useLayoutEffect(() => {
-    HERO_PANELS.forEach((panel, i) => setBarIcon(i as 0 | 1 | 2, panel.icon));
-  }, []);
-
-  useLayoutEffect(() => {
-    const row = rowRef.current;
-    if (!row) return;
-
-    function measure() {
-      const rowRect = row!.getBoundingClientRect();
-      setRowWidth(rowRect.width);
-      setOffsets(
-        barRefs.current.map((bar) =>
-          bar ? bar.getBoundingClientRect().left - rowRect.left : 0
-        )
-      );
-    }
-
-    measure();
-    const observer = new ResizeObserver(measure);
-    observer.observe(row);
-    return () => observer.disconnect();
-  }, []);
-
+function ProjectCard({
+  project,
+  heightClass,
+  isOpen,
+  onToggle,
+  cardRef,
+}: {
+  project: Project;
+  heightClass: string;
+  isOpen: boolean;
+  onToggle: () => void;
+  cardRef: (el: HTMLDivElement | null) => void;
+}) {
   return (
     <div
-      ref={rowRef}
-      className="flex gap-1.5 bg-background w-full"
-      style={{ height: `calc(100dvh - 9rem - ${extraOffset}px)` }}
+      ref={cardRef}
+      className={`relative w-full ${heightClass} break-inside-avoid mb-4 md:mb-6`}
     >
-      {([0, 1, 2] as const).map((i) => (
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={isOpen}
+        // font-size lives here so the icon layer and the label resolve the same
+        // "1em" for --label-lh below — that's what keeps the two-line reservation
+        // and the icon crop point in sync from a single value.
+        className={`group relative block w-full h-full overflow-hidden text-left text-xl md:text-4xl font-bold border border-transparent motion-safe:transition-all motion-safe:duration-200 [--label-bottom:0.5rem] md:[--label-bottom:0.75rem] ${CARD_GLOW} focus-visible:outline-none cursor-pointer`}
+        style={
+          {
+            "--label-lh": 1.15,
+            // The span below adds this as padding-bottom to keep descenders
+            // from getting clipped, which pushes its rendered lines up by
+            // the same amount — subtracted here too so the icon's crop line
+            // stays sitting exactly on the line-1/line-2 boundary (the
+            // midpoint between the bottom of the top line and the top of
+            // the bottom line) instead of drifting down into line 2.
+            "--label-descender-pad": "0.2em",
+          } as React.CSSProperties
+        }
+      >
+        {/* Icon window: bleeds past the card's left edge and gets cropped by
+            the card's own overflow-hidden. Height stops at the top of the
+            label's bottom line — see the label layer below. --label-bottom
+            and --label-descender-pad (both applied to the label, below) are
+            subtracted here too, so the icon's bottom edge stays aligned with
+            the label's actual line-1/line-2 boundary. */}
         <div
-          key={i}
-          ref={(el) => {
-            barRefs.current[i] = el;
-          }}
-          className="flex-1 overflow-hidden"
+          className="absolute top-0 left-0 right-0"
+          style={
+            {
+              backgroundImage: CARD_GRADIENT,
+              ...(project.icon
+                ? {
+                    "--icon": `url("${project.icon}")`,
+                    WebkitMaskImage: "var(--icon)",
+                    maskImage: "var(--icon)",
+                    // Oversized (aspect ratio preserved via "auto" height) and
+                    // nudged slightly right so the icon overflows and gets
+                    // cropped, matching the reference bleed-and-crop look.
+                    WebkitMaskSize: "130% auto",
+                    maskSize: "130% auto",
+                    WebkitMaskRepeat: "no-repeat",
+                    maskRepeat: "no-repeat",
+                    WebkitMaskPosition: "calc(50% + 20px) center",
+                    maskPosition: "calc(50% + 20px) center",
+                  }
+                : {}),
+              height:
+                "calc(100% - var(--label-lh) * 1em - var(--label-bottom) - var(--label-descender-pad))",
+            } as React.CSSProperties
+          }
+        />
+
+        {/* Label: raised slightly off the card's bottom edge (rather than
+            flush at bottom-0) so descenders like the tail of a "j" don't get
+            clipped by the card's overflow-hidden. Reserves a 2-line-tall
+            zone (min-height on this flex container); justify-end packs a
+            1-line title onto the bottom line — clear of the icon bleed above
+            — while a genuinely 2-line title already fills the whole zone, so
+            this only changes the 1-line case. */}
+        <div
+          className="absolute left-2 right-4 md:left-3 md:right-6 flex flex-col justify-end"
+          style={
+            {
+              bottom: "var(--label-bottom)",
+              minHeight: "calc(var(--label-lh) * 2em)",
+            } as React.CSSProperties
+          }
         >
-          <HeroPanel
-            index={i}
-            config={heroConfig.panels?.[i]}
-            sharedImage={heroConfig.sharedImage}
-            rowWidth={rowWidth}
-            offset={offsets[i] ?? 0}
-            icon={iconUrls[i]}
-            title={HERO_PANELS[i].title}
-          />
+          <span
+            className="break-words motion-safe:transition-colors motion-safe:duration-200 group-hover:text-[rgb(239,98,159)]"
+            style={
+              {
+                lineHeight: "var(--label-lh)",
+                display: "-webkit-box",
+                WebkitBoxOrient: "vertical",
+                WebkitLineClamp: 2,
+                overflow: "hidden",
+                // `overflow: hidden` here clips at a box computed strictly from
+                // line-height, which doesn't reserve any room below the
+                // baseline for descenders (g/j/y/p/q) — this padding gives
+                // them somewhere to render without pushing the clamp's
+                // line-count math off (it's a fraction of the font's own
+                // em-box, so it scales with the icon/text at both
+                // breakpoints).
+                paddingBottom: "var(--label-descender-pad)",
+              } as React.CSSProperties
+            }
+          >
+            {project.title}
+          </span>
         </div>
-      ))}
+      </button>
+
+      {/* Overlay: a sibling of the button (not nested inside it) so the real
+          <a> link below stays valid HTML instead of a link-inside-a-button. */}
+      {isOpen && (
+        <div
+          onClick={onToggle}
+          className={`absolute inset-0 z-10 flex flex-col justify-between bg-white border ${GLOW} p-4 md:p-6 overflow-y-auto cursor-pointer`}
+        >
+          <div>
+            <h3 className="text-base md:text-lg font-bold mb-3">{project.title}</h3>
+
+            <p className="text-sm leading-relaxed mb-4">{project.description}</p>
+
+            {project.technologies && project.technologies.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-4">
+                {project.technologies.map((tech) => (
+                  <span
+                    key={tech}
+                    className="text-xs font-bold border border-black px-2 py-0.5"
+                  >
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {project.link && (
+            <a
+              href={project.link}
+              className="text-sm font-bold underline"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+            >
+              View project →
+            </a>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -259,121 +258,75 @@ function HeroRow({ extraOffset }: { extraOffset: number }) {
 
 export default function PortfolioPage() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
-  const titleRef = useRef<HTMLDivElement>(null);
-  const [titleSpace, setTitleSpace] = useState(0);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  // Deterministic on first render (server + first client paint match, so no
+  // hydration mismatch), then reshuffled to genuine randomness once mounted.
+  const [heights, setHeights] = useState<string[]>(() =>
+    projects.map((_, i) => HEIGHT_BUCKETS[i % HEIGHT_BUCKETS.length])
+  );
+
+  useEffect(() => {
+    // Deliberately reshuffling right after mount so every load looks
+    // organically different — the deterministic initializer above exists
+    // purely to keep this first client render matching the server-rendered
+    // HTML (Math.random() can't run during the initial render itself
+    // without risking a hydration mismatch).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setHeights(randomHeights());
+  }, []);
+
+  // While a card's overlay is open, close it on Escape or on a mouse-down
+  // anywhere outside that card — pressing off the card returns it to its
+  // icon+title "cover" state.
+  useEffect(() => {
+    if (openIndex === null) return;
+    const openIdx = openIndex;
+
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpenIndex(null);
+    }
+    function onPointerDown(e: MouseEvent) {
+      const openCard = cardRefs.current[openIdx];
+      if (openCard && !openCard.contains(e.target as Node)) {
+        setOpenIndex(null);
+      }
+    }
+
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("mousedown", onPointerDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("mousedown", onPointerDown);
+    };
+  }, [openIndex]);
 
   function handleToggle(index: number) {
     setOpenIndex((prev) => (prev === index ? null : index));
   }
 
-  // Measure the title's own height + margin-bottom so the hero row below it
-  // can still fill exactly the remaining viewport height, the way it did
-  // when the title lived below the hero instead of above it.
-  useLayoutEffect(() => {
-    const title = titleRef.current;
-    if (!title) return;
-
-    function measure() {
-      const rect = title!.getBoundingClientRect();
-      const marginBottom = parseFloat(getComputedStyle(title!).marginBottom || "0");
-      setTitleSpace(rect.height + marginBottom);
-    }
-
-    measure();
-    const observer = new ResizeObserver(measure);
-    observer.observe(title);
-    return () => observer.disconnect();
-  }, []);
-
   return (
-    <div className="max-w-6xl mx-auto w-full px-4 pt-6 pb-10 md:pb-16">
+    <div className="max-w-6xl mx-auto w-full px-4 pt-10 md:pt-16 pb-10 md:pb-16">
 
       {/* ── Title ── */}
-      <div ref={titleRef} className="inline-block mb-10 md:mb-14">
+      <div className="inline-block align-top mb-10 md:mb-14">
         <h1 className="text-5xl font-bold">Project Portfolio</h1>
         <div className="h-0.75 w-1/2 mt-4 bg-linear-to-r from-[rgb(239,98,159)] to-[rgb(238,205,163)]" />
       </div>
 
-      {/* ── Hero: 3-panel split image ── */}
-      {/* px-6/px-12 insets the panels from the project-list edges */}
-      <div className="px-6 md:px-12 mb-12 md:mb-16">
-        {/* navbar(~6rem) + equal gap above(1.5rem) + equal gap below(1.5rem) = 9rem, */}
-        {/* plus titleSpace since the title now sits above the hero row */}
-        <HeroRow extraOffset={titleSpace} />
-      </div>
-
-      {/* ── Projects list ── */}
-      <div className="w-full">
+      {/* ── Projects: masonry icon-card grid ── */}
+      <div className="columns-2 md:columns-3 gap-4 md:gap-6">
         {projects.map((project, index) => (
-          <div key={index} className="border-t border-black">
-
-            {/* Row: title left, date right */}
-            <button
-              onClick={() => handleToggle(index)}
-              className="flex w-full justify-between items-baseline py-4 md:py-5 text-left cursor-pointer group"
-            >
-              <span className="text-base md:text-lg font-bold">{project.title}</span>
-              <span className="text-base md:text-lg font-bold tabular-nums">{project.date}</span>
-            </button>
-
-            {/* Accordion body — grid-rows trick gives true height animation */}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateRows: openIndex === index ? "1fr" : "0fr",
-                transition: "grid-template-rows 600ms cubic-bezier(0.65, 0, 0.35, 1)",
-              }}
-            >
-              <div className="overflow-hidden">
-                <div className="pb-8 pt-1">
-                  <p className="text-sm md:text-base leading-relaxed mb-5">
-                    {project.description}
-                  </p>
-
-                  {project.technologies && project.technologies.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-5">
-                      {project.technologies.map((tech) => (
-                        <span
-                          key={tech}
-                          className="text-xs font-bold border border-black px-2 py-0.5"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  {project.link && (
-                    <a
-                      href={project.link}
-                      className="text-sm font-bold underline"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      View project →
-                    </a>
-                  )}
-                </div>
-              </div>
-            </div>
-
-          </div>
+          <ProjectCard
+            key={project.title}
+            project={project}
+            heightClass={heights[index]}
+            isOpen={openIndex === index}
+            onToggle={() => handleToggle(index)}
+            cardRef={(el) => {
+              cardRefs.current[index] = el;
+            }}
+          />
         ))}
-
-        {/* Closing border */}
-        <div className="border-t border-black" />
-      </div>
-
-      {/* ── GitHub footer link ── */}
-      <div className="mt-8">
-        <a
-          href="https://github.com/hubertkrzem"
-          className="text-sm font-bold underline"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          View other projects on GitHub →
-        </a>
       </div>
 
     </div>
