@@ -259,7 +259,7 @@ function HeroRow({ extraOffset }: { extraOffset: number }) {
 
 export default function PortfolioPage() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
+  const titleRef = useRef<HTMLDivElement>(null);
   const [titleSpace, setTitleSpace] = useState(0);
 
   function handleToggle(index: number) {
@@ -289,9 +289,10 @@ export default function PortfolioPage() {
     <div className="max-w-6xl mx-auto w-full px-4 pt-6 pb-10 md:pb-16">
 
       {/* ── Title ── */}
-      <h1 ref={titleRef} className="text-5xl md:text-7xl font-bold mb-10 md:mb-14">
-        Project Portfolio
-      </h1>
+      <div ref={titleRef} className="inline-block mb-10 md:mb-14">
+        <h1 className="text-5xl font-bold">Project Portfolio</h1>
+        <div className="h-0.75 w-1/2 mt-4 bg-linear-to-r from-[rgb(239,98,159)] to-[rgb(238,205,163)]" />
+      </div>
 
       {/* ── Hero: 3-panel split image ── */}
       {/* px-6/px-12 insets the panels from the project-list edges */}
