@@ -7,7 +7,16 @@ export default function Home() {
     <main>
       <section id="hero" className="grid grid-cols-1 md:grid-cols-2 md:grid-rows-3 max-w-6xl mx-auto w-full px-4 pb-16 md:pt-16 pt-10 min-h-[90vh] gap-8 md:gap-0 md:content-between">
 
-        <h1 className="text-5xl font-bold md:col-start-1 md:row-start-1 ">Hubert Krzemieniewski<br/>Portfolio</h1>
+        <h1 className="text-5xl font-bold md:col-start-1 md:row-start-1">
+          <span className="block">Hubert Krzemieniewski</span>
+          {/* Wrapped so the underline below can size itself relative to just
+              "Portfolio" (matching the /portfolio and /experience pages'
+              title-underline pattern) rather than the full heading. */}
+          <span className="inline-block align-top">
+            Portfolio
+            <span className="block h-0.75 w-1/2 mt-4 bg-linear-to-r from-[rgb(239,98,159)] to-[rgb(238,205,163)]" />
+          </span>
+        </h1>
 
         <div className="flex items-center justify-center md:col-start-2 md:row-start-1 md:row-span-3 md:self-center">
           <Blob

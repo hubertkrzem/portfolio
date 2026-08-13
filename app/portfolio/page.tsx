@@ -25,48 +25,32 @@ const projects: Project[] = [
       "Personal portfolio built with Next.js 16 and Tailwind CSS v4. Features a custom animated SVG blob component, a sticky navbar with scroll-driven shrinking, and a smooth responsive layout.",
     technologies: ["Next.js", "TypeScript", "Tailwind CSS"],
     link: "https://github.com/hubertkrzem",
-    icon: "/icons/fpl-notifications.png", // placeholder — no dedicated icon yet
+    icon: "/icons/1f4ab.svg", // placeholder — no dedicated icon yet
   },
   {
     title: "Snakes and Ladders CLI",
     date: "05.26",
     description:
-      "A second project — replace this with the real name and description. Describe the problem it solves, the stack you used, and anything interesting you learned or built.",
+      "A snakes and Ladders CLI written in Python that runs monte carlo simulations of snakes and ladders games. Includes customisable settings and returns key game metrics for analysis of how board changes affect game results.",
     technologies: ["Python"],
-    icon: "/icons/snakes-and-ladders.png",
+    icon: "icons/1f40d.svg",
   },
   {
-    title: "Project Three",
-    date: "11.24",
+    title: "Jiramon",
+    date: "7.26",
     description:
-      "A third project — replace this with the real name and description. Include scope, technical decisions, and measurable outcomes where possible.",
-    technologies: ["Python", "FastAPI", "Docker"],
+      "Created a tool that takes in webhooks and automatically syncs boards between Jira and Monday. Built for the PM team I was placed on during my IBM to reduce paperwork and save time.",
+    technologies: ["JavaScript", "Docker"],
     icon: "/icons/jiramon.png", // placeholder — no dedicated icon yet
   },
   {
-    title: "Project Four",
-    date: "08.24",
+    title: "FPL Notification tool",
+    date: "08.25",
     description:
-      "A fourth project — replace this with the real name and description. Include scope, technical decisions, and measurable outcomes where possible.",
-    technologies: ["TypeScript"],
+      "A fantasy football notification tool written in Python and Swift, accesses the public FPL API and outputs notifications to user phones.",
+    technologies: ["Swift", "Python"],
     icon: "/icons/fpl-notifications.png", // placeholder — no dedicated icon yet
-  },
-  {
-    title: "Project Five",
-    date: "03.24",
-    description:
-      "A fifth project — replace this with the real name and description. Include scope, technical decisions, and measurable outcomes where possible.",
-    technologies: ["Python"],
-    icon: "/icons/snakes-and-ladders.png", // placeholder — no dedicated icon yet
-  },
-  {
-    title: "Project Six",
-    date: "01.24",
-    description:
-      "A sixth project — replace this with the real name and description. Include scope, technical decisions, and measurable outcomes where possible.",
-    technologies: ["TypeScript", "Next.js"],
-    icon: "/icons/jiramon.png", // placeholder — no dedicated icon yet
-  },
+  }
 ];
 
 // Card gradient fill — same brand pink→peach used for the title's underline.
@@ -87,14 +71,16 @@ function randomHeights() {
 const GLOW = "border-[rgb(239,98,159)] shadow-[0_0_10px_-4px_rgba(239,98,159,0.35)]";
 
 // Tailwind only detects classes that appear as complete, literal text in the
-// source — concatenating a "hover:" prefix onto the GLOW string above at
-// runtime (e.g. `hover:${GLOW}`) produces a class name Tailwind never sees
-// and therefore never generates CSS for. So each state variant needs its own
-// fully-spelled-out literal string instead of being built from GLOW.
-const CARD_GLOW =
-  "hover:border-[rgb(239,98,159)] hover:shadow-[0_0_10px_-4px_rgba(239,98,159,0.35)] " +
-  "focus-visible:border-[rgb(239,98,159)] focus-visible:shadow-[0_0_10px_-4px_rgba(239,98,159,0.35)] " +
-  "active:border-[rgb(239,98,159)] active:shadow-[0_0_10px_-4px_rgba(239,98,159,0.35)]";
+// source — concatenating a "hover:" prefix onto a shared string at runtime
+// (e.g. `hover:${GLOW}`) produces a class name Tailwind never sees and
+// therefore never generates CSS for. So each state variant needs its own
+// fully-spelled-out literal string instead of being built dynamically.
+// Border + a pink drop shadow beneath the card, both only on
+// hover/focus/press — text color is untouched (see the title span below).
+const CARD_BORDER_GLOW =
+  "hover:border-[rgb(239,98,159)] hover:shadow-[0_12px_24px_-8px_rgba(239,98,159,0.45)] " +
+  "focus-visible:border-[rgb(239,98,159)] focus-visible:shadow-[0_12px_24px_-8px_rgba(239,98,159,0.45)] " +
+  "active:border-[rgb(239,98,159)] active:shadow-[0_12px_24px_-8px_rgba(239,98,159,0.45)]";
 
 // ─── ProjectCard ─────────────────────────────────────────────────────────────
 
@@ -123,7 +109,7 @@ function ProjectCard({
         // font-size lives here so the icon layer and the label resolve the same
         // "1em" for --label-lh below — that's what keeps the two-line reservation
         // and the icon crop point in sync from a single value.
-        className={`group relative block w-full h-full overflow-hidden text-left text-xl md:text-4xl font-bold border border-transparent motion-safe:transition-all motion-safe:duration-200 [--label-bottom:0.5rem] md:[--label-bottom:0.75rem] ${CARD_GLOW} focus-visible:outline-none cursor-pointer`}
+        className={`group relative block w-full h-full overflow-hidden text-left text-xl md:text-4xl font-bold border border-transparent motion-safe:transition-all motion-safe:duration-200 [--label-bottom:0.5rem] md:[--label-bottom:0.75rem] ${CARD_BORDER_GLOW} focus-visible:outline-none cursor-pointer`}
         style={
           {
             "--label-lh": 1.15,
@@ -187,7 +173,7 @@ function ProjectCard({
           }
         >
           <span
-            className="break-words motion-safe:transition-colors motion-safe:duration-200 group-hover:text-[rgb(239,98,159)]"
+            className="break-words text-black"
             style={
               {
                 lineHeight: "var(--label-lh)",
