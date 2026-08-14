@@ -11,6 +11,124 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-satoshi: var(--font-satoshi);
+
+  /* Fly-in-from-left entrance, used to stagger a title in after its
+     underline (see app/portfolio/page.tsx) and to fly experience cards in
+     after their rail marker (see components/experience/Timeline.tsx).
+     "both" fill mode holds the 0%-keyframe (hidden, shifted left) during
+     any animation-delay, then holds the 100%-keyframe once it finishes. */
+  --animate-fly-in-left: fly-in-left 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+
+  /* Rail "draw-in" for the experience timeline — grows top to bottom once
+     the section scrolls into view. Duration is referenced by
+     RAIL_DURATION_MS in Timeline.tsx to time the marker/card stagger, so
+     keep the two in sync if either changes. */
+  --animate-rail-grow: rail-grow 0.9s ease-out both;
+
+  /* Marker fade-in, timed via animation-delay per marker to line up with
+     rail-grow reaching that marker's position (see Timeline.tsx). */
+  --animate-marker-fade: marker-fade 0.4s ease-out both;
+
+  /* Fly-in-from-bottom entrance for project cards as they scroll into view
+     (see app/portfolio/page.tsx). Same easing/duration as fly-in-left for
+     a consistent feel across the site's entrance animations. */
+  --animate-fly-in-bottom: fly-in-bottom 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+
+  /* Editorial mask-reveal for page/hero headings — an opaque panel (same
+     colour as the page background) sits over the text and shrinks away
+     left-to-right, so the text itself never repaints; only the panel's
+     transform animates. This is deliberate: animating clip-path directly
+     on text forces the browser to re-rasterize glyphs against the clip
+     edge every frame, which is what caused a flicker right as the
+     animation finished — a covering panel is pure transform/opacity, so
+     the text layer stays untouched throughout. Used on the h1 in
+     app/page.tsx, app/portfolio/page.tsx, and app/experience/page.tsx —
+     each heading gets its own `relative` wrapper with this panel as an
+     absolutely-positioned aria-hidden sibling. */
+  --animate-wipe-reveal: wipe-reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+
+  /* Underline "drawn on" left-to-right, like a pen catching up under the
+     word once it's mostly legible — scaleX from an origin-left anchor,
+     used in place of fly-in-left for headings (see the three files above). */
+  --animate-underline-draw: underline-draw 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+
+  /* Quiet settle for content that lands after a hero's mask-reveal
+     (subtitle, CTA buttons) — small and restrained on purpose, a beat
+     rather than a second entrance. */
+  --animate-settle-up: settle-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes fly-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-3rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes rail-grow {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes marker-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fly-in-bottom {
+  from {
+    opacity: 0;
+    transform: translateY(3rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* The covering panel starts at full width (scaleX(1), text fully hidden)
+   and shrinks toward its right edge (origin-right, set via the "origin-right"
+   utility class where it's used) so its left edge retreats rightward —
+   revealing the text underneath left-to-right without ever touching it. */
+@keyframes wipe-reveal {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes underline-draw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes settle-up {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /*

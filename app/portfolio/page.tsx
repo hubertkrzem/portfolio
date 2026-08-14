@@ -70,6 +70,11 @@ function randomHeights() {
 
 const GLOW = "border-[rgb(239,98,159)] shadow-[0_0_10px_-4px_rgba(239,98,159,0.35)]";
 
+// Gap between cards that become visible in the same scroll "batch" (see the
+// IntersectionObserver callback below) — keeps a whole visible row from
+// popping in all at once by staggering them left-to-right instead.
+const CARD_STAGGER_MS = 110;
+
 // Tailwind only detects classes that appear as complete, literal text in the
 // source — concatenating a "hover:" prefix onto a shared string at runtime
 // (e.g. `hover:${GLOW}`) produces a class name Tailwind never sees and
@@ -90,17 +95,26 @@ function ProjectCard({
   isOpen,
   onToggle,
   cardRef,
+  revealed,
+  revealDelayMs,
+  reduceMotion,
 }: {
   project: Project;
   heightClass: string;
   isOpen: boolean;
   onToggle: () => void;
   cardRef: (el: HTMLDivElement | null) => void;
+  revealed: boolean;
+  revealDelayMs: number;
+  reduceMotion: boolean;
 }) {
   return (
     <div
       ref={cardRef}
-      className={`relative w-full ${heightClass} break-inside-avoid mb-4 md:mb-6`}
+      className={`relative w-full ${heightClass} break-inside-avoid mb-4 md:mb-6 ${
+        reduceMotion ? "" : revealed ? "animate-fly-in-bottom" : "opacity-0"
+      }`}
+      style={!reduceMotion && revealed ? { animationDelay: `${revealDelayMs}ms` } : undefined}
     >
       <button
         type="button"
@@ -251,6 +265,14 @@ export default function PortfolioPage() {
     projects.map((_, i) => HEIGHT_BUCKETS[i % HEIGHT_BUCKETS.length])
   );
 
+  // Cards fly in from the bottom as they scroll into view. Keyed by index to
+  // an animation-delay in ms rather than a plain revealed flag: cards that
+  // cross the intersection threshold in the same scroll tick (e.g. a whole
+  // row of the masonry grid appearing at once) are sorted left-to-right and
+  // given staggered delays, so they cascade in rather than popping together.
+  const [revealedCards, setRevealedCards] = useState<Map<number, number>>(new Map());
+  const [reduceMotion, setReduceMotion] = useState(false);
+
   useEffect(() => {
     // Deliberately reshuffling right after mount so every load looks
     // organically different — the deterministic initializer above exists
@@ -259,6 +281,48 @@ export default function PortfolioPage() {
     // without risking a hydration mismatch).
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setHeights(randomHeights());
+  }, []);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      // Reduced-motion users get every card visible immediately — no
+      // observer, no fly-in.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setReduceMotion(true);
+      return;
+    }
+
+    // One-shot per card: once a card has scrolled into view and flown in,
+    // stop watching it. Entries arriving in the same callback (i.e. the same
+    // scroll tick) are sorted left-to-right so a whole row cascades in
+    // instead of appearing simultaneously.
+    const observer = new IntersectionObserver(
+      (observedEntries) => {
+        const newlyVisible = observedEntries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => a.target.getBoundingClientRect().left - b.target.getBoundingClientRect().left);
+        if (newlyVisible.length === 0) return;
+
+        setRevealedCards((prev) => {
+          let next: Map<number, number> | null = null;
+          newlyVisible.forEach((entry, i) => {
+            const index = cardRefs.current.indexOf(entry.target as HTMLDivElement);
+            if (index === -1 || prev.has(index)) return;
+            if (!next) next = new Map(prev);
+            next.set(index, i * CARD_STAGGER_MS);
+            observer.unobserve(entry.target);
+          });
+          return next ?? prev;
+        });
+      },
+      { threshold: 0.15, rootMargin: "0px 0px -10% 0px" }
+    );
+
+    cardRefs.current.forEach((el) => {
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
   }, []);
 
   // While a card's overlay is open, close it on Escape or on a mouse-down
@@ -295,8 +359,19 @@ export default function PortfolioPage() {
 
       {/* ── Title ── */}
       <div className="inline-block align-top mb-10 md:mb-14">
-        <h1 className="text-5xl font-bold">Project Portfolio</h1>
-        <div className="h-0.75 w-1/2 mt-4 bg-linear-to-r from-[rgb(239,98,159)] to-[rgb(238,205,163)]" />
+        {/* Same editorial mask-reveal as the home hero and Experience header
+            — see --animate-wipe-reveal in globals.css for why this is an
+            opaque panel shrinking away rather than a clip-path on the text. */}
+        <h1 className="relative text-5xl font-bold">
+          Project Portfolio
+          <span
+            aria-hidden
+            className="absolute inset-0 bg-background origin-right pointer-events-none motion-safe:animate-wipe-reveal"
+          />
+        </h1>
+        <div
+          className="h-0.75 w-1/2 mt-4 origin-left bg-linear-to-r from-[rgb(239,98,159)] to-[rgb(238,205,163)] motion-safe:animate-underline-draw motion-safe:[animation-delay:250ms]"
+        />
       </div>
 
       {/* ── Projects: masonry icon-card grid ── */}
@@ -311,6 +386,9 @@ export default function PortfolioPage() {
             cardRef={(el) => {
               cardRefs.current[index] = el;
             }}
+            revealed={revealedCards.has(index)}
+            revealDelayMs={revealedCards.get(index) ?? 0}
+            reduceMotion={reduceMotion}
           />
         ))}
       </div>
