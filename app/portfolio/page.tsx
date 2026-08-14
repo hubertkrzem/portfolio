@@ -364,9 +364,12 @@ export default function PortfolioPage() {
             opaque panel shrinking away rather than a clip-path on the text. */}
         <h1 className="relative text-5xl font-bold">
           Project Portfolio
+          {/* [transform:scaleX(0)] fallback for when motion-safe: doesn't
+              match — see the matching comment in app/page.tsx. Without it
+              the panel's un-animated default is "fully covering". */}
           <span
             aria-hidden
-            className="absolute inset-0 bg-background origin-right pointer-events-none motion-safe:animate-wipe-reveal"
+            className="absolute inset-0 bg-background origin-right pointer-events-none [transform:scaleX(0)] motion-safe:animate-wipe-reveal"
           />
         </h1>
         <div

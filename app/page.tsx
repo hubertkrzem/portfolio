@@ -16,9 +16,16 @@ export default function Home() {
               comment on --animate-wipe-reveal in globals.css. */}
           <span className="relative block w-fit">
             Hubert Krzemieniewski
+            {/* [transform:scaleX(0)] is the fallback when motion-safe:
+                doesn't match (reduced motion) — without it this panel's
+                default, un-animated state is "fully covering" (its natural
+                size), permanently hiding the text. An active animation
+                always overrides a plain declared value for the same
+                property, so this has no effect once animate-wipe-reveal
+                is running. */}
             <span
               aria-hidden
-              className="absolute inset-0 bg-background origin-right pointer-events-none motion-safe:animate-wipe-reveal"
+              className="absolute inset-0 bg-background origin-right pointer-events-none [transform:scaleX(0)] motion-safe:animate-wipe-reveal"
             />
           </span>
           {/* Wrapped so the underline below can size itself relative to just
@@ -29,7 +36,7 @@ export default function Home() {
               Portfolio
               <span
                 aria-hidden
-                className="absolute inset-0 bg-background origin-right pointer-events-none motion-safe:animate-wipe-reveal motion-safe:[animation-delay:120ms]"
+                className="absolute inset-0 bg-background origin-right pointer-events-none [transform:scaleX(0)] motion-safe:animate-wipe-reveal motion-safe:[animation-delay:120ms]"
               />
             </span>
             <span className="block h-0.75 w-1/2 mt-4 origin-left bg-linear-to-r from-[rgb(239,98,159)] to-[rgb(238,205,163)] motion-safe:animate-underline-draw motion-safe:[animation-delay:550ms]" />
