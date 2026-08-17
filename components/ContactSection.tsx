@@ -70,7 +70,7 @@ export default function ContactSection() {
   const playing = revealed && !reduceMotion;
 
   return (
-    <section id="contact" ref={sectionRef} className="max-w-6xl mx-auto p-4 w-full">
+    <section id="contact" ref={sectionRef} className="max-w-6xl mx-auto p-4 pt-[5vh] w-full">
       <div className="inline-block align-top">
         {/* Same editorial mask-reveal as every other heading on the site —
             see --animate-wipe-reveal in globals.css. Gated on the JS
