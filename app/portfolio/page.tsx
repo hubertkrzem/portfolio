@@ -10,8 +10,6 @@ interface Project {
   description: string;
   technologies?: string[];
   link?: string;
-  // Optional so future projects can land without matching icon art ready —
-  // a card just falls back to a plain gradient fill when it's missing.
   icon?: string;
 }
 
@@ -25,7 +23,7 @@ const projects: Project[] = [
       "Personal portfolio built with Next.js 16 and Tailwind CSS v4. Features a custom animated SVG blob component, a sticky navbar with scroll-driven shrinking, and a smooth responsive layout.",
     technologies: ["Next.js", "TypeScript", "Tailwind CSS"],
     link: "https://github.com/hubertkrzem",
-    icon: "/icons/1f4ab.svg", // placeholder — no dedicated icon yet
+    icon: "/icons/1f4ab.svg",
   },
   {
     title: "Snakes and Ladders CLI",
@@ -41,7 +39,7 @@ const projects: Project[] = [
     description:
       "Created a tool that takes in webhooks and automatically syncs boards between Jira and Monday. Built for the PM team I was placed on during my IBM to reduce paperwork and save time.",
     technologies: ["JavaScript", "Docker"],
-    icon: "/icons/jiramon.png", // placeholder — no dedicated icon yet
+    icon: "/icons/jiramon.png",
   },
   {
     title: "FPL Notification tool",
@@ -49,11 +47,10 @@ const projects: Project[] = [
     description:
       "A fantasy football notification tool written in Python and Swift, accesses the public FPL API and outputs notifications to user phones.",
     technologies: ["Swift", "Python"],
-    icon: "/icons/fpl-notifications.png", // placeholder — no dedicated icon yet
+    icon: "/icons/fpl-notifications.png",
   }
 ];
 
-// Card gradient fill — same brand pink→peach used for the title's underline.
 const CARD_GRADIENT = "linear-gradient(to top, rgb(239,98,159), rgb(238,205,163))";
 
 // Fixed height "buckets" a card can land on. Column width in this layout tops
@@ -68,24 +65,9 @@ function randomHeights() {
   );
 }
 
-const GLOW = "border-[rgb(239,98,159)] shadow-[0_0_10px_-4px_rgba(239,98,159,0.35)]";
+// Card glow and look defined in global css 
 
-// Gap between cards that become visible in the same scroll "batch" (see the
-// IntersectionObserver callback below) — keeps a whole visible row from
-// popping in all at once by staggering them left-to-right instead.
 const CARD_STAGGER_MS = 110;
-
-// Tailwind only detects classes that appear as complete, literal text in the
-// source — concatenating a "hover:" prefix onto a shared string at runtime
-// (e.g. `hover:${GLOW}`) produces a class name Tailwind never sees and
-// therefore never generates CSS for. So each state variant needs its own
-// fully-spelled-out literal string instead of being built dynamically.
-// Border + a pink drop shadow beneath the card, both only on
-// hover/focus/press — text color is untouched (see the title span below).
-const CARD_BORDER_GLOW =
-  "hover:border-[rgb(239,98,159)] hover:shadow-[0_12px_24px_-8px_rgba(239,98,159,0.45)] " +
-  "focus-visible:border-[rgb(239,98,159)] focus-visible:shadow-[0_12px_24px_-8px_rgba(239,98,159,0.45)] " +
-  "active:border-[rgb(239,98,159)] active:shadow-[0_12px_24px_-8px_rgba(239,98,159,0.45)]";
 
 // ─── ProjectCard ─────────────────────────────────────────────────────────────
 
@@ -123,7 +105,7 @@ function ProjectCard({
         // font-size lives here so the icon layer and the label resolve the same
         // "1em" for --label-lh below — that's what keeps the two-line reservation
         // and the icon crop point in sync from a single value.
-        className={`group relative block w-full h-full overflow-hidden text-left text-xl md:text-4xl font-bold border border-transparent motion-safe:transition-all motion-safe:duration-200 [--label-bottom:0.5rem] md:[--label-bottom:0.75rem] ${CARD_BORDER_GLOW} focus-visible:outline-none cursor-pointer`}
+        className={`group relative block w-full h-full overflow-hidden text-left text-xl md:text-4xl font-bold border border-transparent motion-safe:transition-all motion-safe:duration-200 [--label-bottom:0.5rem] md:[--label-bottom:0.75rem] card-border-glow focus-visible:outline-none cursor-pointer`}
         style={
           {
             "--label-lh": 1.15,
@@ -216,7 +198,7 @@ function ProjectCard({
       {isOpen && (
         <div
           onClick={onToggle}
-          className={`absolute inset-0 z-10 flex flex-col justify-between bg-white border ${GLOW} p-4 md:p-6 overflow-y-auto cursor-pointer`}
+          className="absolute inset-0 z-10 flex flex-col justify-between bg-white border card-open-glow p-4 md:p-6 overflow-y-auto cursor-pointer"
         >
           <div>
             <h3 className="text-base md:text-lg font-bold mb-3">{project.title}</h3>

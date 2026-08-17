@@ -120,6 +120,32 @@
   }
 }
 
+/* Border + pink drop shadow shown only on hover/focus/press — used on the
+   portfolio project-card buttons (app/portfolio/page.tsx). A real Tailwind
+   utility, not a plain class-string constant, so the hover/focus-visible/
+   active selectors live in the CSS itself instead of needing three
+   fully-spelled-out `hover:`/`focus-visible:`/`active:` variants wherever
+   it's applied (Tailwind can't detect variants built by string
+   concatenation at runtime — see @utility docs). */
+@utility card-border-glow {
+  &:hover,
+  &:focus-visible,
+  &:active {
+    border-color: rgb(239 98 159);
+    box-shadow: 0 12px 24px -8px rgb(239 98 159 / 0.45);
+  }
+}
+
+/* Border + a softer pink shadow on the expanded portfolio card overlay —
+   always on, not an interaction state, so unlike card-border-glow above
+   this needs no pseudo-selectors. Pulled out for the same reason: keeps
+   the pink border/shadow pairing in one place instead of a class-string
+   constant next to the JSX. */
+@utility card-open-glow {
+  border-color: rgb(239 98 159);
+  box-shadow: 0 0 10px -4px rgb(239 98 159 / 0.35);
+}
+
 @keyframes settle-up {
   from {
     opacity: 0;
