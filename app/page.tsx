@@ -55,7 +55,7 @@ export default function Home() {
         </div>
 
         <p className="text-4xl md:col-start-1 md:row-start-2 motion-safe:animate-settle-up motion-safe:[animation-delay:400ms]">
-          Product Manager Intern<br/>IBM, Ireland
+          Final Year CS (Data Science & AI)<br/>UCD, Ireland
         </p>
 
         <div className="flex flex-col gap-5 font-bold w-full md:w-1/2 md:col-start-1 md:row-start-3 md:self-end">
