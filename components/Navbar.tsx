@@ -62,6 +62,7 @@ export default function Navbar() {
                     {/* LEFT: Nav links — hidden on mobile */}
                     <div className="hidden md:block md:col-start-1 md:row-start-1">
                         <ul className="flex justify-start space-x-10 text-black text-xs font-bold">
+                            <li><Link href="/">Home</Link></li>
                             <li><Link href="/portfolio">Portfolio</Link></li>
                             <li><Link href="/experience">Experience</Link></li>
                         </ul>
