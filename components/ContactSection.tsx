@@ -117,7 +117,7 @@ export default function ContactSection() {
                 <Image src={panel.iconSrc} alt={panel.iconAlt} width={150} height={150} className="relative z-10" />
               </a>
             </div>
-            <a href={panel.href} className="font-bold underline">
+            <a href={panel.href} className="font-bold">
               {panel.label}
             </a>
           </div>

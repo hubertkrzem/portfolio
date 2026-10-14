@@ -10,18 +10,18 @@ export default function Footer() {
 
                 {/* Two-column links */}
                 <div className="grid grid-cols-2">
-                    <div className="flex flex-col font-bold underline">
+                    <div className="flex flex-col font-bold">
                         <Link href="/portfolio" className="text-lg py-2">Portfolio</Link>
                         <a href="/experience" className="text-lg py-2">Experience</a>
                         <Link href="/redacted_Hubert_Krzemieniewski_CV.pdf" className="text-lg py-2">Resume</Link>
                     </div>
-                    <div className="flex flex-col items-left font-bold underline">
+                    <div className="flex flex-col items-left font-bold">
                         <a href="https://linkedin.com/in/hubert-krzemieniewski" className="text-lg py-2">LinkedIn</a>
                         <a href="https://github.com/hubertkrzem" className="text-lg py-2">Github</a>
                     </div>
                 </div>
 
-                <a href="#top" className="block text-lg font-bold underline pb-2 text-center scroll-smooth">↑ Back to top</a>
+                <a href="#top" className="block text-lg font-bold pb-2 text-center scroll-smooth">↑ Back to top</a>
 
                 <div className="flex items-center justify-center gap-4">
                     <Link href="/" className="block shrink-0">
@@ -63,7 +63,7 @@ export default function Footer() {
                     </div>
 
                     {/* RIGHT: Links */}
-                    <div className="flex justify-end space-x-10 text-black text-xs font-bold text-right underline">
+                    <div className="flex justify-end space-x-10 text-black text-xs font-bold text-right">
                         <ul>
                             <li><a href="https://linkedin.com/in/hubert-krzemieniewski">LinkedIn</a></li>
                             <li><a href="https://github.com/hubertkrzem">Github</a></li>

@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
+import CubeLogo from "./CubeLogo";
 
 const LOGO_H     = 60;  // base logo height in px (h-15)
 const PAD_Y      = 16;  // base vertical padding in px (py-4)
@@ -59,32 +59,25 @@ export default function Navbar() {
         <>
             <nav ref={navRef} className="sticky top-0 z-50 bg-white/75 backdrop-blur-sm border-b border-black font-satoshi">
                 <div style={{ paddingTop: padY, paddingBottom: padY }} className="grid grid-cols-3 max-w-6xl mx-auto items-center w-full px-4 transition-[padding] duration-300 ease-in-out">
-                    {/* LEFT: Logo */}
-                    <div style={{ height: logoH }} className="relative w-fit transition-[height] duration-300 ease-in-out">
-                        <Link href="/">
-                            <Image
-                                src="/logo-hk.svg"
-                                alt="Site logo, black lowercase letters, h and k"
-                                width={82}
-                                height={63}
-                                className="h-full w-auto object-contain cursor-pointer"
-                                priority
-                            />
-                        </Link>
-                    </div>
-
-                    {/* CENTER: Nav links — hidden on mobile */}
-                    <div className="hidden md:block">
-                        <ul className="flex justify-center space-x-10 text-black text-xs font-bold">
+                    {/* LEFT: Nav links — hidden on mobile */}
+                    <div className="hidden md:block md:col-start-1 md:row-start-1">
+                        <ul className="flex justify-start space-x-10 text-black text-xs font-bold">
                             <li><Link href="/portfolio">Portfolio</Link></li>
                             <li><Link href="/experience">Experience</Link></li>
-                            <li><a href="/redacted_Hubert_Krzemieniewski_CV.pdf">Resume</a></li>
                         </ul>
                     </div>
 
-                    {/* RIGHT: Contact (desktop) / Index toggle (mobile) */}
-                    <div className="col-start-3">
-                        <ul className="hidden md:flex justify-end space-x-3 text-black text-xs font-bold">
+                    {/* CENTER: Logo (left-aligned on mobile) */}
+                    <div className="w-fit md:col-start-2 md:row-start-1 md:justify-self-center">
+                        <Link href="/" className="block">
+                            <CubeLogo size={logoH} />
+                        </Link>
+                    </div>
+
+                    {/* RIGHT: Resume + Contact (desktop) / Index toggle (mobile) */}
+                    <div className="col-start-3 md:row-start-1">
+                        <ul className="hidden md:flex justify-end space-x-10 text-black text-xs font-bold">
+                            <li><a href="/redacted_Hubert_Krzemieniewski_CV.pdf">Resume</a></li>
                             <li><a href="/#contact">Contact</a></li>
                         </ul>
                         <div className="md:hidden flex justify-end">
