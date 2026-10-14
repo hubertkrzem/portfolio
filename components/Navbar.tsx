@@ -41,8 +41,15 @@ export default function Navbar() {
     }, []);
 
     useEffect(() => {
-        document.body.style.overflow = menuOpen ? "hidden" : "";
-        return () => { document.body.style.overflow = ""; };
+        if (!menuOpen) return;
+        // Locking scroll removes the scrollbar; pad by its width so the page behind doesn't widen and reflow
+        const scrollbarW = window.innerWidth - document.documentElement.clientWidth;
+        document.body.style.overflow = "hidden";
+        if (scrollbarW > 0) document.body.style.paddingRight = `${scrollbarW}px`;
+        return () => {
+            document.body.style.overflow = "";
+            document.body.style.paddingRight = "";
+        };
     }, [menuOpen]);
 
     const logoH = scrolled ? LOGO_H * SHRINK : LOGO_H;
