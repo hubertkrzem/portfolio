@@ -26,6 +26,15 @@ const projects: Project[] = [
     icon: "/icons/1f4ab.svg",
   },
   {
+    title: "LeapFrog",
+    date: "10.26",
+    description:
+      "Built in one day at hackUCD 2026, an iOS reimagining of the TFI Live app. It shows Dublin's buses, Luas trams and DART trains live on one map, combining the NTA's GTFS-Realtime API with Irish Rail and Luas realtime feeds. Each vehicle is drawn as a 3D model that glides along its route at timetable pace to estimate where it is right now. Also includes stop search with live arrivals, a digital Leap Card concept for Apple Wallet, and a Claude-powered travel assistant that summarises live disruptions.",
+    technologies: ["Swift", "SwiftUI", "Python", "API Integration"],
+    link: "https://github.com/hubertkrzem/hackUCD-LeapFrog",
+    icon: "/icons/globe.svg",
+  },
+  {
     title: "Snakes and Ladders CLI",
     date: "05.26",
     description:
