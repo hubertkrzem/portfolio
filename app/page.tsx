@@ -67,7 +67,7 @@ export default function Home() {
           <Button
             label="Get In Touch"
             link="#contact"
-            className="bg-black text-white hover:bg-mist-800 hover:border-black motion-safe:animate-settle-up motion-safe:[animation-delay:730ms]"
+            className="bg-black text-background hover:bg-mist-800 hover:border-black motion-safe:animate-settle-up motion-safe:[animation-delay:730ms]"
           />
         </div>
 

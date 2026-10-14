@@ -207,7 +207,7 @@ function ProjectCard({
       {isOpen && (
         <div
           onClick={onToggle}
-          className="absolute inset-0 z-10 flex flex-col justify-between bg-white border card-open-glow p-4 md:p-6 overflow-y-auto cursor-pointer"
+          className="absolute inset-0 z-10 flex flex-col justify-between bg-background border card-open-glow p-4 md:p-6 overflow-y-auto cursor-pointer"
         >
           <div>
             <h3 className="text-base md:text-lg font-bold mb-3">{project.title}</h3>

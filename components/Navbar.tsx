@@ -57,7 +57,7 @@ export default function Navbar() {
 
     return (
         <>
-            <nav ref={navRef} className="sticky top-0 z-50 bg-white/75 backdrop-blur-sm border-b border-black font-satoshi">
+            <nav ref={navRef} className="sticky top-0 z-50 bg-background/75 backdrop-blur-sm border-b border-black font-satoshi">
                 <div style={{ paddingTop: padY, paddingBottom: padY }} className="grid grid-cols-3 max-w-6xl mx-auto items-center w-full px-4 transition-[padding] duration-300 ease-in-out">
                     {/* LEFT: Nav links — hidden on mobile */}
                     <div className="hidden md:block md:col-start-1 md:row-start-1">
@@ -101,7 +101,7 @@ export default function Navbar() {
                 />
 
                 {/* Panel */}
-                <div className={`absolute top-0 right-0 w-[78%] h-full bg-white flex flex-col transition-transform duration-300 ease-in-out ${menuOpen ? "translate-x-0" : "translate-x-full"}`}>
+                <div className={`absolute top-0 right-0 w-[78%] h-full bg-background flex flex-col transition-transform duration-300 ease-in-out ${menuOpen ? "translate-x-0" : "translate-x-full"}`}>
                     {/* Close button — height derived from measured navbar height */}
                     <div style={{ height: navHeight || undefined }} className="flex items-center justify-end px-6">
                         <button

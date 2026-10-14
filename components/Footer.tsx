@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export default function Footer() {
     return (
-        <footer className="bg-white border-t border-black font-satoshi">
+        <footer className="bg-background border-t border-black font-satoshi">
 
             {/* MOBILE (hidden at md+) */}
             <div className="md:hidden pt-4 px-6 pb-8 space-y-6">

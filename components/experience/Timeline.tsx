@@ -72,7 +72,7 @@ export default function Timeline({ entries }: { entries: ExperienceEntry[] }) {
               amount, then re-centered on itself via -translate-x-1/2.
             */}
             <span
-              className={`absolute -left-6 md:-left-8 top-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center border border-black bg-white font-mono text-xs font-bold ${
+              className={`absolute -left-6 md:-left-8 top-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center border border-black bg-background font-mono text-xs font-bold ${
                 playing ? "animate-marker-fade" : reduceMotion ? "" : "opacity-0"
               }`}
               style={playing ? { animationDelay: `${delayMs}ms` } : undefined}
@@ -81,14 +81,14 @@ export default function Timeline({ entries }: { entries: ExperienceEntry[] }) {
             </span>
 
             <article
-              className={`border border-black bg-white p-6 md:p-8 transition-all duration-200 group-hover:border-[rgb(239,98,159)] group-hover:shadow-[0_0_10px_-4px_rgba(239,98,159,0.35)] ${
+              className={`border border-black bg-background p-6 md:p-8 transition-all duration-200 group-hover:border-[rgb(239,98,159)] group-hover:shadow-[0_0_10px_-4px_rgba(239,98,159,0.35)] ${
                 playing ? "animate-fly-in-left" : reduceMotion ? "" : "opacity-0"
               }`}
               style={playing ? { animationDelay: `${delayMs + CARD_DELAY_MS}ms` } : undefined}
             >
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
                 <div className="flex items-center gap-4 min-w-0">
-                  <div className="shrink-0 w-12 h-12 p-1.5 border border-black/20 overflow-hidden bg-white">
+                  <div className="shrink-0 w-12 h-12 p-1.5 border border-black/20 overflow-hidden bg-background">
                     <Image
                       src={entry.image}
                       alt={entry.imageAlt ?? `${entry.company} logo`}
