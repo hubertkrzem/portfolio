@@ -75,15 +75,15 @@ export default function Navbar() {
                         </ul>
                     </div>
 
-                    {/* CENTER: Logo (left-aligned on mobile) */}
-                    <div className="w-fit md:col-start-2 md:row-start-1 md:justify-self-center">
+                    {/* CENTER: Logo */}
+                    <div className="w-fit col-start-2 row-start-1 justify-self-center">
                         <Link href="/" className="block">
                             <CubeLogo size={logoH} />
                         </Link>
                     </div>
 
                     {/* RIGHT: Resume + Contact (desktop) / Index toggle (mobile) */}
-                    <div className="col-start-3 md:row-start-1">
+                    <div className="col-start-3 row-start-1">
                         <ul className="hidden md:flex justify-end space-x-10 text-black text-xs font-bold">
                             <li><a href="/redacted_Hubert_Krzemieniewski_CV.pdf">Resume</a></li>
                             <li><a href="/#contact">Contact</a></li>
