@@ -21,7 +21,8 @@ export default function Navbar() {
     useEffect(() => {
         if (!navRef.current) return;
         const ro = new ResizeObserver(() => {
-            if (navRef.current) setNavHeight(navRef.current.offsetHeight);
+            // clientHeight excludes the 1px border-b, so the menu's top divider lands on the same row as that border
+            if (navRef.current) setNavHeight(navRef.current.clientHeight);
         });
         ro.observe(navRef.current);
         return () => ro.disconnect();
