@@ -62,7 +62,7 @@ export default function Home() {
           <Button
             label="Download CV"
             link="/redacted_Hubert_Krzemieniewski_CV.pdf"
-            className="hover:bg-background-pink motion-safe:animate-settle-up motion-safe:[animation-delay:650ms]"
+            className="hover:bg-neutral-100 motion-safe:animate-settle-up motion-safe:[animation-delay:650ms]"
           />
           <Button
             label="Get In Touch"
