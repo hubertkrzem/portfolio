@@ -135,7 +135,7 @@ export function Blob({
       {...svgProps}
     >
       {gradientEl}
-      <path ref={pathRef} fill={fillValue} d={d} transform={`translate(${center} ${center})`} />
+      <path ref={pathRef} fill={fillValue} d={d} transform={`translate(${center} ${center})`} />    
     </svg>
   );
 }

@@ -17,15 +17,6 @@ interface Project {
 
 const projects: Project[] = [
   {
-    title: "Portfolio Website",
-    date: "07.26",
-    description:
-      "Personal portfolio built with Next.js 16 and Tailwind CSS v4. Features a custom animated SVG blob component, a sticky navbar with scroll-driven shrinking, and a smooth responsive layout.",
-    technologies: ["Next.js", "TypeScript", "Tailwind CSS"],
-    link: "https://github.com/hubertkrzem",
-    icon: "/icons/1f4ab.svg",
-  },
-  {
     title: "LeapFrog",
     date: "10.26",
     description:
@@ -35,20 +26,30 @@ const projects: Project[] = [
     icon: "/icons/globe.svg",
   },
   {
-    title: "Snakes and Ladders CLI",
-    date: "05.26",
+    title: "Jiramon",
+    date: "07.26",
     description:
-      "A snakes and Ladders CLI written in Python that runs monte carlo simulations of snakes and ladders games. Includes customisable settings and returns key game metrics for analysis of how board changes affect game results.",
-    technologies: ["Python"],
-    icon: "icons/1f40d.svg",
+      "Built during my IBM internship for my PM team: a service that receives webhooks from Jira and Monday.com and keeps both boards in sync in both directions, so the team no longer entered the same updates twice.",
+    technologies: ["TypeScript", "Node.js", "Docker"],
+    icon: "/icons/jiramon.png",
   },
   {
-    title: "Jiramon",
-    date: "7.26",
+    title: "Pension & Financial",
+    date: "09.25",
     description:
-      "Created a tool that takes in webhooks and automatically syncs boards between Jira and Monday. Built for the PM team I was placed on during my IBM to reduce paperwork and save time.",
-    technologies: ["JavaScript", "Docker"],
-    icon: "/icons/jiramon.png",
+      "A client website for a Dublin financial advisory firm, built in Next.js and TypeScript with Sanity as the CMS so the owners could edit their own content. Designed so odd client input (empty, missing, oversized or special-character content) and CMS outages can't break pages, with a secret-protected webhook that publishes edits instantly. Covered by 121 Vitest + React Testing Library tests against a mocked CMS. Live for about a year.",
+    technologies: ["Next.js", "TypeScript", "Sanity", "Vitest"],
+    link: "https://github.com/hubertkrzem/pension-and-financial",
+    icon: "/icons/noto-1f331.svg",
+  },
+  {
+    title: "Portfolio Website",
+    date: "07.26",
+    description:
+      "Personal portfolio built with Next.js 16 and Tailwind CSS v4. Features a custom animated SVG blob component, a sticky navbar with scroll-driven shrinking, and a smooth responsive layout.",
+    technologies: ["Next.js", "TypeScript", "Tailwind CSS"],
+    link: "https://github.com/hubertkrzem",
+    icon: "/icons/1f4ab.svg",
   },
   {
     title: "FPL Notification tool",
@@ -57,7 +58,15 @@ const projects: Project[] = [
       "A fantasy football notification tool written in Python and Swift, accesses the public FPL API and outputs notifications to user phones.",
     technologies: ["Swift", "Python"],
     icon: "/icons/fpl-notifications.png",
-  }
+  },
+  {
+    title: "Snakes and Ladders CLI",
+    date: "05.26",
+    description:
+      "A snakes and Ladders CLI written in Python that runs monte carlo simulations of snakes and ladders games. Includes customisable settings and returns key game metrics for analysis of how board changes affect game results.",
+    technologies: ["Python"],
+    icon: "/icons/1f40d.svg",
+  },
 ];
 
 const CARD_GRADIENT = "linear-gradient(to top, rgb(239,98,159), rgb(238,205,163))";
