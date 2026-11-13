@@ -70,7 +70,13 @@ export default function ContactSection() {
   const playing = revealed && !reduceMotion;
 
   return (
-    <section id="contact" ref={sectionRef} className="max-w-6xl mx-auto p-4 pt-[5vh] w-full">
+    // max-md:scroll-mt: on mobile, jumping to #contact otherwise leaves a big
+    // gap — html's 7rem scroll-padding-top (globals.css) is sized for the
+    // full navbar, but it has shrunk to ~3rem by the time you arrive, and the
+    // section's own 5vh top padding sits on top of that. The negative margin
+    // cancels the 5vh and the extra padding, so "Get in touch" lands ~1.5rem
+    // below the shrunk navbar: 7rem - 2.5rem - 5vh + 5vh = navbar (~3rem) + 1.5rem.
+    <section id="contact" ref={sectionRef} className="max-w-6xl mx-auto p-4 pt-[5vh] w-full max-md:scroll-mt-[calc(-2.5rem_-_5vh)]">
       <div className="inline-block align-top">
         {/* Same editorial mask-reveal as every other heading on the site —
             see --animate-wipe-reveal in globals.css. Gated on the JS
