@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -34,15 +34,6 @@ const projects: Project[] = [
     icon: "/icons/jiramon.png",
   },
   {
-    title: "Pension & Financial",
-    date: "09.25",
-    description:
-      "A client website for a Dublin financial advisory firm, built in Next.js and TypeScript with Sanity as the CMS so the owners could edit their own content. Designed so odd client input (empty, missing, oversized or special-character content) and CMS outages can't break pages, with a secret-protected webhook that publishes edits instantly. Covered by 121 Vitest + React Testing Library tests against a mocked CMS. Live for about a year.",
-    technologies: ["Next.js", "TypeScript", "Sanity", "Vitest"],
-    link: "https://github.com/hubertkrzem/pension-and-financial",
-    icon: "/icons/noto-1f331.svg",
-  },
-  {
     title: "Portfolio Website",
     date: "07.26",
     description:
@@ -50,6 +41,15 @@ const projects: Project[] = [
     technologies: ["Next.js", "TypeScript", "Tailwind CSS"],
     link: "https://github.com/hubertkrzem",
     icon: "/icons/1f4ab.svg",
+  },
+  {
+    title: "Pension & Financial",
+    date: "09.25",
+    description:
+      "A client website for a Dublin financial advisory firm, built in Next.js and TypeScript with Sanity as the CMS so the owners could edit their own content. Designed so odd client input (empty, missing, oversized or special-character content) and CMS outages can't break pages, with a secret-protected webhook that publishes edits instantly. Covered by 121 Vitest + React Testing Library tests against a mocked CMS. Live for about a year.",
+    technologies: ["Next.js", "TypeScript", "Sanity", "Vitest"],
+    link: "https://github.com/hubertkrzem/pension-and-financial",
+    icon: "/icons/noto-1f331.svg",
   },
   {
     title: "FPL Notification tool",
@@ -72,7 +72,7 @@ const projects: Project[] = [
 const CARD_GRADIENT = "linear-gradient(to top, rgb(239,98,159), rgb(238,205,163))";
 
 // Fixed height "buckets" a card can land on. Column width in this layout tops
-// out around ~360–370px at every breakpoint (columns-2 on mobile, columns-3
+// out around ~360–370px at every breakpoint (2 columns on mobile, 3
 // once max-w-6xl is reached), so these are all comfortably taller than that —
 // width < height holds by construction, no runtime measuring needed.
 const HEIGHT_BUCKETS = ["h-[28rem]", "h-[34rem]", "h-[40rem]"];
@@ -86,6 +86,28 @@ function randomHeights() {
 // Card glow and look defined in global css 
 
 const CARD_STAGGER_MS = 110;
+
+// Cards are dealt round-robin into this many columns (card i goes to column
+// i % count), so the grid reads left-to-right, row by row, while each column
+// still stacks its own cards masonry-style. CSS `columns` can't do that — it
+// fills top-to-bottom. Matches the old columns-2 / md:columns-3 breakpoint.
+const DESKTOP_QUERY = "(min-width: 48rem)";
+
+function subscribeToDesktopQuery(onChange: () => void) {
+  const mql = window.matchMedia(DESKTOP_QUERY);
+  mql.addEventListener("change", onChange);
+  return () => mql.removeEventListener("change", onChange);
+}
+
+function useColumnCount() {
+  return useSyncExternalStore(
+    subscribeToDesktopQuery,
+    () => (window.matchMedia(DESKTOP_QUERY).matches ? 3 : 2),
+    // Server render (and the first client paint, to avoid a hydration
+    // mismatch) assumes desktop; mobile switches to 2 columns right after.
+    () => 3
+  );
+}
 
 // ─── ProjectCard ─────────────────────────────────────────────────────────────
 
@@ -108,13 +130,55 @@ function ProjectCard({
   revealDelayMs: number;
   reduceMotion: boolean;
 }) {
+  // The back of the card (the overlay) must fit without scrolling, which the
+  // random height bucket alone can't promise: in narrow mobile columns a long
+  // description needs more room than even the tallest bucket. So the overlay
+  // is always rendered (just hidden while closed) and its natural content
+  // height is measured; that becomes the card's min-height. The bucket still
+  // sets the height whenever it's tall enough, keeping the masonry variety.
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const [contentHeight, setContentHeight] = useState(0);
+
+  useEffect(() => {
+    const overlay = overlayRef.current;
+    if (!overlay) return;
+
+    function measure() {
+      if (!overlay) return;
+      const cs = getComputedStyle(overlay);
+      // Sum the children's own heights rather than reading the overlay's
+      // scrollHeight — scrollHeight never drops below the box itself, so it
+      // couldn't shrink back down after the window gets wider.
+      let total =
+        parseFloat(cs.paddingTop) +
+        parseFloat(cs.paddingBottom) +
+        parseFloat(cs.borderTopWidth) +
+        parseFloat(cs.borderBottomWidth);
+      for (const child of Array.from(overlay.children)) {
+        total += (child as HTMLElement).offsetHeight;
+      }
+      setContentHeight(Math.ceil(total));
+    }
+
+    measure();
+    // Re-measure when the column width changes (text rewraps) or when the
+    // children resize on their own, e.g. once web fonts finish loading.
+    const ro = new ResizeObserver(measure);
+    ro.observe(overlay);
+    for (const child of Array.from(overlay.children)) ro.observe(child);
+    return () => ro.disconnect();
+  }, []);
+
   return (
     <div
       ref={cardRef}
       className={`relative w-full ${heightClass} break-inside-avoid mb-4 md:mb-6 ${
         reduceMotion ? "" : revealed ? "animate-fly-in-bottom" : "opacity-0"
       }`}
-      style={!reduceMotion && revealed ? { animationDelay: `${revealDelayMs}ms` } : undefined}
+      style={{
+        minHeight: contentHeight || undefined,
+        ...(!reduceMotion && revealed ? { animationDelay: `${revealDelayMs}ms` } : {}),
+      }}
     >
       <button
         type="button"
@@ -213,43 +277,47 @@ function ProjectCard({
 
       {/* Overlay: a sibling of the button (not nested inside it) so the real
           <a> link below stays valid HTML instead of a link-inside-a-button. */}
-      {isOpen && (
-        <div
-          onClick={onToggle}
-          className="absolute inset-0 z-10 flex flex-col justify-between bg-background border card-open-glow p-4 md:p-6 overflow-y-auto cursor-pointer"
-        >
-          <div>
-            <h3 className="text-base md:text-lg font-bold mb-3">{project.title}</h3>
+      {/* Always rendered so it can be measured (see contentHeight above);
+          `invisible` while closed also takes it out of the tab order and the
+          accessibility tree, matching the old not-rendered-at-all behaviour. */}
+      <div
+        ref={overlayRef}
+        onClick={onToggle}
+        className={`absolute inset-0 z-10 flex flex-col justify-between bg-background border card-open-glow p-4 md:p-6 overflow-y-auto cursor-pointer ${
+          isOpen ? "" : "invisible"
+        }`}
+      >
+        <div>
+          <h3 className="text-base md:text-lg font-bold mb-3">{project.title}</h3>
 
-            <p className="text-sm leading-relaxed mb-4">{project.description}</p>
+          <p className="text-sm leading-relaxed mb-4">{project.description}</p>
 
-            {project.technologies && project.technologies.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-4">
-                {project.technologies.map((tech) => (
-                  <span
-                    key={tech}
-                    className="text-xs font-bold border border-black px-2 py-0.5"
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {project.link && (
-            <a
-              href={project.link}
-              className="text-sm font-bold underline"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-            >
-              View project →
-            </a>
+          {project.technologies && project.technologies.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              {project.technologies.map((tech) => (
+                <span
+                  key={tech}
+                  className="text-xs font-bold border border-black px-2 py-0.5"
+                >
+                  {tech}
+                </span>
+              ))}
+            </div>
           )}
         </div>
-      )}
+
+        {project.link && (
+          <a
+            href={project.link}
+            className="text-sm font-bold"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+          >
+            View project →
+          </a>
+        )}
+      </div>
     </div>
   );
 }
@@ -259,6 +327,7 @@ function ProjectCard({
 export default function PortfolioPage() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const columnCount = useColumnCount();
   // Deterministic on first render (server + first client paint match, so no
   // hydration mismatch), then reshuffled to genuine randomness once mounted.
   const [heights, setHeights] = useState<string[]>(() =>
@@ -323,7 +392,10 @@ export default function PortfolioPage() {
     });
 
     return () => observer.disconnect();
-  }, []);
+    // Re-run when the column count changes: cards move to different column
+    // wrappers and remount as new DOM nodes, which need observing afresh.
+    // Already-revealed cards are skipped via the prev.has() check above.
+  }, [columnCount]);
 
   // While a card's overlay is open, close it on Escape or on a mouse-down
   // anywhere outside that card — pressing off the card returns it to its
@@ -377,22 +449,28 @@ export default function PortfolioPage() {
         />
       </div>
 
-      {/* ── Projects: masonry icon-card grid ── */}
-      <div className="columns-2 md:columns-3 gap-4 md:gap-6">
-        {projects.map((project, index) => (
-          <ProjectCard
-            key={project.title}
-            project={project}
-            heightClass={heights[index]}
-            isOpen={openIndex === index}
-            onToggle={() => handleToggle(index)}
-            cardRef={(el) => {
-              cardRefs.current[index] = el;
-            }}
-            revealed={revealedCards.has(index)}
-            revealDelayMs={revealedCards.get(index) ?? 0}
-            reduceMotion={reduceMotion}
-          />
+      {/* ── Projects: masonry icon-card grid, filled left-to-right ── */}
+      <div className="flex items-start gap-4 md:gap-6">
+        {Array.from({ length: columnCount }, (_, col) => (
+          <div key={col} className="flex-1 min-w-0">
+            {projects.map((project, index) =>
+              index % columnCount !== col ? null : (
+                <ProjectCard
+                  key={project.title}
+                  project={project}
+                  heightClass={heights[index]}
+                  isOpen={openIndex === index}
+                  onToggle={() => handleToggle(index)}
+                  cardRef={(el) => {
+                    cardRefs.current[index] = el;
+                  }}
+                  revealed={revealedCards.has(index)}
+                  revealDelayMs={revealedCards.get(index) ?? 0}
+                  reduceMotion={reduceMotion}
+                />
+              )
+            )}
+          </div>
         ))}
       </div>
 
